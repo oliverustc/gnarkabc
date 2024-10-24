@@ -40,51 +40,66 @@ func NewGroth16(circuit frontend.Circuit, curve ecc.ID) *Groth16 {
 	}
 }
 
-func (g *Groth16) Compile() {
+func (g *Groth16) Compile() error {
 	logger.Debug("compiling circuit ...")
 	var err error
 	start := time.Now()
 	g.CCS, err = frontend.Compile(g.Field, r1cs.NewBuilder, g.Circuit)
 	if err != nil {
-		logger.Fatal("compile circuit failed. " + err.Error())
+		logger.Error("compile circuit failed. " + err.Error())
+		return err
 	}
 	g.CompileTime = time.Since(start)
 	logger.Debug("circuit compiled, took: " + g.CompileTime.String())
+	return nil
 }
 
-func (g *Groth16) Setup() {
+func (g *Groth16) Setup() error {
 	logger.Debug("setting up circuit ...")
 	var err error
 	start := time.Now()
 	g.PK, g.VK, err = groth16.Setup(g.CCS)
 	if err != nil {
-		logger.Fatal("setup circuit failed. " + err.Error())
+		logger.Error("setup circuit failed. " + err.Error())
+		return err
 	}
 	g.SetupTime = time.Since(start)
 	logger.Debug("circuit setup, took: " + g.SetupTime.String())
+	return nil
 }
 
-func (g *Groth16) Prove() {
+func (g *Groth16) generateWitness(publicOnly bool) (witness.Witness, error) {
+	var opts []frontend.WitnessOption
+	if publicOnly {
+		opts = append(opts, frontend.PublicOnly())
+	}
+	return frontend.NewWitness(g.Assignment, g.Field, opts...)
+}
+
+func (g *Groth16) Prove() error {
 	logger.Debug("proving ...")
 	var err error
 	start := time.Now()
-	g.WitnessFull, err = frontend.NewWitness(g.Assignment, g.Field)
+	g.WitnessFull, err = g.generateWitness(false)
 	if err != nil {
-		logger.Fatal("generate witness failed. " + err.Error())
+		logger.Error("generate witness failed. " + err.Error())
+		return err
 	}
 	g.Proof, err = groth16.Prove(g.CCS, g.PK, g.WitnessFull)
 	if err != nil {
-		logger.Fatal("prove failed. " + err.Error())
+		logger.Error("prove failed. " + err.Error())
+		return err
 	}
 	g.ProveTime = time.Since(start)
 	logger.Debug("circuit proved, took: " + g.ProveTime.String())
+	return nil
 }
 
 func (g *Groth16) Verify() {
 	logger.Debug("verifying ...")
 	var err error
 	start := time.Now()
-	g.WitnessPublic, err = frontend.NewWitness(g.Assignment, g.Field, frontend.PublicOnly())
+	g.WitnessPublic, err = g.generateWitness(true)
 	if err != nil {
 		logger.Fatal("generate public witness failed. " + err.Error())
 	}

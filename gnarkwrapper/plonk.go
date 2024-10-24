@@ -1,6 +1,7 @@
 package gnarkwrapper
 
 import (
+	"errors"
 	"gnarkabc/logger"
 	"math/big"
 	"time"
@@ -60,62 +61,46 @@ func (p *Plonk) Compile() {
 	logger.Debug("circuit compiled, took: " + p.CompileTime.String())
 }
 
-func (p *Plonk) Setup2() {
-	logger.Debug("setting up circuit ...")
-	start := time.Now()
-	scs := p.CCS.(*bls12_377cs.SparseR1CS)
-
-	srs, srsLagrange, err := unsafekzg.NewSRS(scs)
-	if err != nil {
-		logger.Fatal("create SRS failed. " + err.Error())
-	}
-	pk, vk, err := plonk.Setup(p.CCS, srs, srsLagrange)
-	if err != nil {
-		logger.Fatal("setup circuit failed. " + err.Error())
-	}
-	p.SetupTime = time.Since(start)
-	logger.Debug("circuit setup, took: " + p.SetupTime.String())
-	p.PK = pk
-	p.VK = vk
-}
-
 func (p *Plonk) Setup() {
 	logger.Debug("setting up circuit ...")
 	var srs, srsLagrange kzg.SRS
 	var err error
 	start := time.Now()
-	switch p.Curve {
-	case ecc.BN254:
-		scs := p.CCS.(*bn254cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BLS12_377:
-		scs := p.CCS.(*bls12_377cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BLS12_381:
-		scs := p.CCS.(*bls12_381cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BW6_761:
-		scs := p.CCS.(*bw6_761cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BLS24_315:
-		scs := p.CCS.(*bls24_315cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BW6_633:
-		scs := p.CCS.(*bw6_633cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	case ecc.BLS24_317:
-		scs := p.CCS.(*bls24_317cs.SparseR1CS)
-		srs, srsLagrange, err = unsafekzg.NewSRS(scs)
-	}
+
+	// 提取 SRS 创建逻辑，避免代码重复
+	srs, srsLagrange, err = p.createSRS(p.CCS)
 	if err != nil {
 		logger.Fatal("create SRS failed. " + err.Error())
 	}
+
 	p.PK, p.VK, err = plonk.Setup(p.CCS, srs, srsLagrange)
 	if err != nil {
 		logger.Fatal("setup circuit failed. " + err.Error())
 	}
+
 	p.SetupTime = time.Since(start)
 	logger.Debug("circuit setup, took: " + p.SetupTime.String())
+}
+
+// 新增一个通用的创建 SRS 方法
+func (p *Plonk) createSRS(scs constraint.ConstraintSystem) (kzg.SRS, kzg.SRS, error) {
+	switch p.Curve {
+	case ecc.BN254:
+		return unsafekzg.NewSRS(scs.(*bn254cs.SparseR1CS))
+	case ecc.BLS12_377:
+		return unsafekzg.NewSRS(scs.(*bls12_377cs.SparseR1CS))
+	case ecc.BLS12_381:
+		return unsafekzg.NewSRS(scs.(*bls12_381cs.SparseR1CS))
+	case ecc.BW6_761:
+		return unsafekzg.NewSRS(scs.(*bw6_761cs.SparseR1CS))
+	case ecc.BLS24_315:
+		return unsafekzg.NewSRS(scs.(*bls24_315cs.SparseR1CS))
+	case ecc.BW6_633:
+		return unsafekzg.NewSRS(scs.(*bw6_633cs.SparseR1CS))
+	case ecc.BLS24_317:
+		return unsafekzg.NewSRS(scs.(*bls24_317cs.SparseR1CS))
+	}
+	return nil, nil, errors.New("invalid curve ID")
 }
 
 func (p *Plonk) Prove() {
