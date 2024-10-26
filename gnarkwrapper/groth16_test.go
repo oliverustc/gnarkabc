@@ -29,7 +29,7 @@ func TestGroth16(t *testing.T) {
 			Q: 17,
 			N: 221,
 		}
-		zk.Assignment = circuit
+		zk.Circuit = circuit
 		zk.Prove()
 		zk.Verify()
 

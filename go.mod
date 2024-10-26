@@ -6,7 +6,7 @@ require (
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/consensys/gnark v0.11.0
 	github.com/consensys/gnark-crypto v0.14.0
-	github.com/rs/zerolog v1.33.0
+	github.com/go-echarts/go-echarts/v2 v2.4.3
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -22,6 +22,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
 	github.com/ronanh/intcomp v1.1.0 // indirect
+	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect

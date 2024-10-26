@@ -113,6 +113,26 @@ func (g *Groth16) Verify() {
 	logger.Debug("circuit verified, took: " + g.VerifyTime.String())
 }
 
+func (g *Groth16) BenchmarkCompile(iterations int) {
+	logger.Debug("benchmarking compiling circuit ...")
+	var compileTime time.Duration
+	for i := 0; i < iterations; i++ {
+		g.Compile()
+		compileTime += g.CompileTime
+	}
+	g.CompileTime = compileTime / time.Duration(iterations)
+}
+
+func (g *Groth16) BenchmarkSetup(iterations int) {
+	logger.Debug("benchmarking setup circuit ...")
+	var setupTime time.Duration
+	for i := 0; i < iterations; i++ {
+		g.Setup()
+		setupTime += g.SetupTime
+	}
+	g.SetupTime = setupTime / time.Duration(iterations)
+}
+
 func (g *Groth16) BenchmarkProve(iterations int) {
 	logger.Debug("benchmarking proving circuit ...")
 	var proveTime time.Duration

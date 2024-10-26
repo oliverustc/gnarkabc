@@ -135,24 +135,42 @@ func (p *Plonk) Verify() {
 	logger.Debug("circuit verified, took: " + p.VerifyTime.String())
 }
 
-func (p *Plonk) BenchmarkProve(n int) {
+func (p *Plonk) BenchmarkCompile(iterations int) {
+	logger.Debug("benchmarking compile circuit ...")
+	var compileTime time.Duration
+	for i := 0; i < iterations; i++ {
+		p.Compile()
+		compileTime += p.CompileTime
+	}
+	p.CompileTime = compileTime / time.Duration(iterations)
+}
+
+func (p *Plonk) BenchmarkSetup(iterations int) {
+	logger.Debug("benchmarking setup ")
+	var setupTime time.Duration
+	for i := 0; i < iterations; i++ {
+		p.Setup()
+		setupTime += p.SetupTime
+	}
+	p.SetupTime = setupTime / time.Duration(iterations)
+}
+
+func (p *Plonk) BenchmarkProve(iterations int) {
 	logger.Debug("benchmarking proving circuit ...")
 	var proveTime time.Duration
-	for i := 0; i < n; i++ {
+	for i := 0; i < iterations; i++ {
 		p.Prove()
 		proveTime += p.ProveTime
 	}
-	p.ProveTime = proveTime / time.Duration(n)
-	logger.Debug("proving circuit benchmarked, took: " + p.ProveTime.String())
+	p.ProveTime = proveTime / time.Duration(iterations)
 }
 
-func (p *Plonk) BenchmarkVerify(n int) {
+func (p *Plonk) BenchmarkVerify(iterations int) {
 	logger.Debug("benchmarking verifying circuit ...")
 	var verifyTime time.Duration
-	for i := 0; i < n; i++ {
+	for i := 0; i < iterations; i++ {
 		p.Verify()
 		verifyTime += p.VerifyTime
 	}
-	p.VerifyTime = verifyTime / time.Duration(n)
-	logger.Debug("verifying circuit benchmarked, took: " + p.VerifyTime.String())
+	p.VerifyTime = verifyTime / time.Duration(iterations)
 }

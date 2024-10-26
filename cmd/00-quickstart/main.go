@@ -64,13 +64,8 @@ func main() {
 		return
 	}
 
-	// 创建一个公共电路实例
-	publicCircuit := &SimpleCircuit{
-		Y: 7, // 公共输出 Y 的值
-	}
-
 	// 创建公共见证
-	publicWitness, err := frontend.NewWitness(publicCircuit, ecc.BN254.ScalarField(), frontend.PublicOnly())
+	publicWitness, err := frontend.NewWitness(validCircuit, ecc.BN254.ScalarField(), frontend.PublicOnly())
 	if err != nil {
 		fmt.Println(err)
 		return
