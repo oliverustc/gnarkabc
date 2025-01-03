@@ -1,12 +1,12 @@
 module gnarkabc
 
-go 1.23.2
+go 1.22.2
 
 require (
 	github.com/antonfisher/nested-logrus-formatter v1.3.1
 	github.com/consensys/gnark v0.11.0
 	github.com/consensys/gnark-crypto v0.14.0
-	github.com/go-echarts/go-echarts/v2 v2.4.3
+	github.com/go-echarts/go-echarts/v2 v2.4.6
 	github.com/sirupsen/logrus v1.9.3
 )
 
@@ -25,6 +25,7 @@ require (
 	github.com/rs/zerolog v1.33.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/exp v0.0.0-20240823005443-9b4947da3948 // indirect
 	golang.org/x/sync v0.8.0 // indirect
 	golang.org/x/sys v0.24.0 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect

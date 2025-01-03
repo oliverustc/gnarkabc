@@ -1,74 +1,69 @@
 package gnarkwrapper
 
 import (
-	"math/big"
 	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"
-	"github.com/consensys/gnark/constraint"
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/frontend/cs/r1cs"
 
 	"gnarkabc/logger"
 )
 
-type Groth16 struct {
-	Circuit       frontend.Circuit
-	Curve         ecc.ID
-	Field         *big.Int
-	Assignment    frontend.Circuit
-	WitnessFull   witness.Witness
-	WitnessPublic witness.Witness
-	CCS           constraint.ConstraintSystem
-	PK            groth16.ProvingKey
-	VK            groth16.VerifyingKey
-	Proof         groth16.Proof
-
-	CompileTime time.Duration
-	SetupTime   time.Duration
-	ProveTime   time.Duration
-	VerifyTime  time.Duration
+// Groth16Wrapper Groth16证明系统的包装器
+type Groth16Wrapper struct {
+	BaseWrapper
+	PK    groth16.ProvingKey   // 证明密钥
+	VK    groth16.VerifyingKey // 验证密钥
+	Proof groth16.Proof        // 生成的证明
 }
 
-func NewGroth16(circuit frontend.Circuit, curve ecc.ID) *Groth16 {
-	return &Groth16{
-		Circuit: circuit,
-		Curve:   curve,
-		Field:   curve.ScalarField(),
+// NewGroth16 创建新的Groth16包装器实例
+func NewGroth16(circuit frontend.Circuit, curve ecc.ID) *Groth16Wrapper {
+	return &Groth16Wrapper{
+		BaseWrapper: BaseWrapper{
+			Circuit: circuit,
+			Curve:   curve,
+			Field:   curve.ScalarField(),
+		},
 	}
 }
 
-func (g *Groth16) Compile() error {
+// Compile 编译电路
+func (g *Groth16Wrapper) Compile() {
 	logger.Debug("compiling circuit ...")
 	var err error
 	start := time.Now()
 	g.CCS, err = frontend.Compile(g.Field, r1cs.NewBuilder, g.Circuit)
 	if err != nil {
-		logger.Error("compile circuit failed. " + err.Error())
-		return err
+		logger.Fatal("compile circuit failed. " + err.Error())
 	}
 	g.CompileTime = time.Since(start)
 	logger.Debug("circuit compiled, took: " + g.CompileTime.String())
-	return nil
+	if g.ConstraintNum == 0 {
+		g.ConstraintNum = g.CCS.GetNbConstraints()
+		logger.Debug("constraint number: %d", g.ConstraintNum)
+	}
 }
 
-func (g *Groth16) Setup() error {
+// Setup 设置电路的证明系统
+func (g *Groth16Wrapper) Setup() {
 	logger.Debug("setting up circuit ...")
 	var err error
 	start := time.Now()
 	g.PK, g.VK, err = groth16.Setup(g.CCS)
 	if err != nil {
-		logger.Error("setup circuit failed. " + err.Error())
-		return err
+		logger.Fatal("setup circuit failed. " + err.Error())
 	}
 	g.SetupTime = time.Since(start)
 	logger.Debug("circuit setup, took: " + g.SetupTime.String())
-	return nil
 }
 
-func (g *Groth16) generateWitness(publicOnly bool) (witness.Witness, error) {
+// generateWitness 生成见证者数据
+// publicOnly: 是否只生成公开输入的见证者
+func (g *Groth16Wrapper) generateWitness(publicOnly bool) (witness.Witness, error) {
 	var opts []frontend.WitnessOption
 	if publicOnly {
 		opts = append(opts, frontend.PublicOnly())
@@ -76,26 +71,30 @@ func (g *Groth16) generateWitness(publicOnly bool) (witness.Witness, error) {
 	return frontend.NewWitness(g.Assignment, g.Field, opts...)
 }
 
-func (g *Groth16) Prove() error {
+// SetAssignment 设置电路的赋值
+func (g *Groth16Wrapper) SetAssignment(assignment frontend.Circuit) {
+	g.Assignment = assignment
+}
+
+// Prove 生成零知识证明
+func (g *Groth16Wrapper) Prove() {
 	logger.Debug("proving ...")
 	var err error
 	start := time.Now()
 	g.WitnessFull, err = g.generateWitness(false)
 	if err != nil {
-		logger.Error("generate witness failed. " + err.Error())
-		return err
+		logger.Fatal("generate witness failed. " + err.Error())
 	}
 	g.Proof, err = groth16.Prove(g.CCS, g.PK, g.WitnessFull)
 	if err != nil {
-		logger.Error("prove failed. " + err.Error())
-		return err
+		logger.Fatal("prove failed. " + err.Error())
 	}
 	g.ProveTime = time.Since(start)
 	logger.Debug("circuit proved, took: " + g.ProveTime.String())
-	return nil
 }
 
-func (g *Groth16) Verify() {
+// Verify 验证零知识证明
+func (g *Groth16Wrapper) Verify() {
 	logger.Debug("verifying ...")
 	var err error
 	start := time.Now()
@@ -113,7 +112,8 @@ func (g *Groth16) Verify() {
 	logger.Debug("circuit verified, took: " + g.VerifyTime.String())
 }
 
-func (g *Groth16) BenchmarkCompile(iterations int) {
+// BenchmarkCompile 对编译过程进行基准测试
+func (g *Groth16Wrapper) BenchmarkCompile(iterations int) time.Duration {
 	logger.Debug("benchmarking compiling circuit ...")
 	var compileTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -121,9 +121,12 @@ func (g *Groth16) BenchmarkCompile(iterations int) {
 		compileTime += g.CompileTime
 	}
 	g.CompileTime = compileTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, compile time: %s", iterations, g.CompileTime.String())
+	return g.CompileTime
 }
 
-func (g *Groth16) BenchmarkSetup(iterations int) {
+// BenchmarkSetup 对设置过程进行基准测试
+func (g *Groth16Wrapper) BenchmarkSetup(iterations int) time.Duration {
 	logger.Debug("benchmarking setup circuit ...")
 	var setupTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -131,9 +134,12 @@ func (g *Groth16) BenchmarkSetup(iterations int) {
 		setupTime += g.SetupTime
 	}
 	g.SetupTime = setupTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, setup time: %s", iterations, g.SetupTime.String())
+	return g.SetupTime
 }
 
-func (g *Groth16) BenchmarkProve(iterations int) {
+// BenchmarkProve 对证明生成过程进行基准测试
+func (g *Groth16Wrapper) BenchmarkProve(iterations int) time.Duration {
 	logger.Debug("benchmarking proving circuit ...")
 	var proveTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -141,9 +147,12 @@ func (g *Groth16) BenchmarkProve(iterations int) {
 		proveTime += g.ProveTime
 	}
 	g.ProveTime = proveTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, prove time: %s", iterations, g.ProveTime.String())
+	return g.ProveTime
 }
 
-func (g *Groth16) BenchmarkVerify(iterations int) {
+// BenchmarkVerify 对验证过程进行基准测试
+func (g *Groth16Wrapper) BenchmarkVerify(iterations int) time.Duration {
 	logger.Debug("benchmarking verifying circuit ...")
 	var verifyTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -151,4 +160,38 @@ func (g *Groth16) BenchmarkVerify(iterations int) {
 		verifyTime += g.VerifyTime
 	}
 	g.VerifyTime = verifyTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, verify time: %s", iterations, g.VerifyTime.String())
+	return g.VerifyTime
+}
+
+func (g *Groth16Wrapper) GetConstraintNum() int {
+	return g.CCS.GetNbConstraints()
+}
+
+func (g *Groth16Wrapper) GetWitness() witness.Witness {
+	return g.WitnessFull
+}
+
+func (g *Groth16Wrapper) GetWitnessJson(public bool) []byte {
+	schama, err := frontend.NewSchema(g.Assignment)
+	if err != nil {
+		logger.Fatal("get schema failed: %v", err)
+	}
+	if public {
+		witness, err := g.WitnessFull.Public()
+		if err != nil {
+			logger.Fatal("get public witness failed: %v", err)
+		}
+		witnessJson, err := witness.ToJSON(schama)
+		if err != nil {
+			logger.Fatal("get public witness json failed: %v", err)
+		}
+		return witnessJson
+	} else {
+		witnessJson, err := g.WitnessFull.ToJSON(schama)
+		if err != nil {
+			logger.Fatal("get witness json failed: %v", err)
+		}
+		return witnessJson
+	}
 }

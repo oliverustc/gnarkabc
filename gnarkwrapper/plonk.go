@@ -3,7 +3,6 @@ package gnarkwrapper
 import (
 	"errors"
 	"gnarkabc/logger"
-	"math/big"
 	"time"
 
 	"github.com/consensys/gnark-crypto/ecc"
@@ -23,33 +22,27 @@ import (
 	"github.com/consensys/gnark/test/unsafekzg"
 )
 
-type Plonk struct {
-	Circuit       frontend.Circuit
-	Curve         ecc.ID
-	Field         *big.Int
-	Assignment    frontend.Circuit
-	WitnessFull   witness.Witness
-	WitnessPublic witness.Witness
-	CCS           constraint.ConstraintSystem
-	PK            plonk.ProvingKey
-	VK            plonk.VerifyingKey
-	Proof         plonk.Proof
-
-	CompileTime time.Duration
-	SetupTime   time.Duration
-	ProveTime   time.Duration
-	VerifyTime  time.Duration
+// PlonkWrapper PLONK证明系统的包装器
+type PlonkWrapper struct {
+	BaseWrapper
+	PK    plonk.ProvingKey   // 证明密钥/
+	VK    plonk.VerifyingKey // 验证密钥
+	Proof plonk.Proof        // 生成的证明
 }
 
-func NewPlonk(circuit frontend.Circuit, curve ecc.ID) *Plonk {
-	return &Plonk{
-		Circuit: circuit,
-		Curve:   curve,
-		Field:   curve.ScalarField(),
+// NewPlonk 创建新的PLONK包装器实例
+func NewPlonk(circuit frontend.Circuit, curve ecc.ID) *PlonkWrapper {
+	return &PlonkWrapper{
+		BaseWrapper: BaseWrapper{
+			Circuit: circuit,
+			Curve:   curve,
+			Field:   curve.ScalarField(),
+		},
 	}
 }
 
-func (p *Plonk) Compile() {
+// Compile 编译电路
+func (p *PlonkWrapper) Compile() {
 	logger.Debug("compiling circuit ...")
 	var err error
 	start := time.Now()
@@ -59,9 +52,14 @@ func (p *Plonk) Compile() {
 	}
 	p.CompileTime = time.Since(start)
 	logger.Debug("circuit compiled, took: " + p.CompileTime.String())
+	if p.ConstraintNum == 0 {
+		p.ConstraintNum = p.CCS.GetNbConstraints()
+		logger.Debug("constraint number: %d", p.ConstraintNum)
+	}
 }
 
-func (p *Plonk) Setup() {
+// Setup 设置电路的证明系统
+func (p *PlonkWrapper) Setup() {
 	logger.Debug("setting up circuit ...")
 	var srs, srsLagrange kzg.SRS
 	var err error
@@ -82,8 +80,8 @@ func (p *Plonk) Setup() {
 	logger.Debug("circuit setup, took: " + p.SetupTime.String())
 }
 
-// 新增一个通用的创建 SRS 方法
-func (p *Plonk) createSRS(scs constraint.ConstraintSystem) (kzg.SRS, kzg.SRS, error) {
+// createSRS 创建结构化参考字符串(SRS)
+func (p *PlonkWrapper) createSRS(scs constraint.ConstraintSystem) (kzg.SRS, kzg.SRS, error) {
 	switch p.Curve {
 	case ecc.BN254:
 		return unsafekzg.NewSRS(scs.(*bn254cs.SparseR1CS))
@@ -103,7 +101,13 @@ func (p *Plonk) createSRS(scs constraint.ConstraintSystem) (kzg.SRS, kzg.SRS, er
 	return nil, nil, errors.New("invalid curve ID")
 }
 
-func (p *Plonk) Prove() {
+// SetAssignment 设置电路的赋值
+func (p *PlonkWrapper) SetAssignment(assignment frontend.Circuit) {
+	p.Assignment = assignment
+}
+
+// Prove 生成零知识证明
+func (p *PlonkWrapper) Prove() {
 	logger.Debug("proving circuit ...")
 	var err error
 	start := time.Now()
@@ -119,7 +123,8 @@ func (p *Plonk) Prove() {
 	logger.Debug("circuit proved, took: " + p.ProveTime.String())
 }
 
-func (p *Plonk) Verify() {
+// Verify 验证零知识证明
+func (p *PlonkWrapper) Verify() {
 	logger.Debug("verifying circuit ...")
 	var err error
 	start := time.Now()
@@ -135,7 +140,8 @@ func (p *Plonk) Verify() {
 	logger.Debug("circuit verified, took: " + p.VerifyTime.String())
 }
 
-func (p *Plonk) BenchmarkCompile(iterations int) {
+// BenchmarkCompile 对编译过程进行基准测试
+func (p *PlonkWrapper) BenchmarkCompile(iterations int) time.Duration {
 	logger.Debug("benchmarking compile circuit ...")
 	var compileTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -143,9 +149,12 @@ func (p *Plonk) BenchmarkCompile(iterations int) {
 		compileTime += p.CompileTime
 	}
 	p.CompileTime = compileTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, compile time: %s", iterations, p.CompileTime.String())
+	return p.CompileTime
 }
 
-func (p *Plonk) BenchmarkSetup(iterations int) {
+// BenchmarkSetup 对设置过程进行基准测试
+func (p *PlonkWrapper) BenchmarkSetup(iterations int) time.Duration {
 	logger.Debug("benchmarking setup ")
 	var setupTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -153,9 +162,12 @@ func (p *Plonk) BenchmarkSetup(iterations int) {
 		setupTime += p.SetupTime
 	}
 	p.SetupTime = setupTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, setup time: %s", iterations, p.SetupTime.String())
+	return p.SetupTime
 }
 
-func (p *Plonk) BenchmarkProve(iterations int) {
+// BenchmarkProve 对证明生成过程进行基准测试
+func (p *PlonkWrapper) BenchmarkProve(iterations int) time.Duration {
 	logger.Debug("benchmarking proving circuit ...")
 	var proveTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -163,9 +175,12 @@ func (p *Plonk) BenchmarkProve(iterations int) {
 		proveTime += p.ProveTime
 	}
 	p.ProveTime = proveTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, prove time: %s", iterations, p.ProveTime.String())
+	return p.ProveTime
 }
 
-func (p *Plonk) BenchmarkVerify(iterations int) {
+// BenchmarkVerify 对验证过程进行基准测试
+func (p *PlonkWrapper) BenchmarkVerify(iterations int) time.Duration {
 	logger.Debug("benchmarking verifying circuit ...")
 	var verifyTime time.Duration
 	for i := 0; i < iterations; i++ {
@@ -173,4 +188,38 @@ func (p *Plonk) BenchmarkVerify(iterations int) {
 		verifyTime += p.VerifyTime
 	}
 	p.VerifyTime = verifyTime / time.Duration(iterations)
+	logger.Debug("after %d iterations, verify time: %s", iterations, p.VerifyTime.String())
+	return p.VerifyTime
+}
+
+func (p *PlonkWrapper) GetConstraintNum() int {
+	return p.CCS.GetNbConstraints()
+}
+
+func (p *PlonkWrapper) GetWitness() witness.Witness {
+	return p.WitnessFull
+}
+
+func (p *PlonkWrapper) GetWitnessJson(public bool) []byte {
+	schama, err := frontend.NewSchema(p.Assignment)
+	if err != nil {
+		logger.Fatal("get schema failed: %v", err)
+	}
+	if public {
+		witness, err := p.WitnessFull.Public()
+		if err != nil {
+			logger.Fatal("get public witness failed: %v", err)
+		}
+		witnessJson, err := witness.ToJSON(schama)
+		if err != nil {
+			logger.Fatal("get public witness json failed: %v", err)
+		}
+		return witnessJson
+	} else {
+		witnessJson, err := p.WitnessFull.ToJSON(schama)
+		if err != nil {
+			logger.Fatal("get witness json failed: %v", err)
+		}
+		return witnessJson
+	}
 }
