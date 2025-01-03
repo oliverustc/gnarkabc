@@ -1,0 +1,82 @@
+[
+    {
+        "scheme": "groth16",
+        "curve": "BN254",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 9,
+        "verify_time": 3,
+        "constraint_num": 331
+    },
+    {
+        "scheme": "groth16",
+        "curve": "BLS12-377",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 16,
+        "verify_time": 7,
+        "constraint_num": 311
+    },
+    {
+        "scheme": "groth16",
+        "curve": "BLS12-381",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 15,
+        "verify_time": 5,
+        "constraint_num": 334
+    },
+    {
+        "scheme": "groth16",
+        "curve": "BLS24-315",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 23,
+        "verify_time": 11,
+        "constraint_num": 328
+    },
+    {
+        "scheme": "groth16",
+        "curve": "BLS24-317",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 24,
+        "verify_time": 12,
+        "constraint_num": 365
+    },
+    {
+        "scheme": "plonk",
+        "curve": "BN254",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 43,
+        "verify_time": 6,
+        "constraint_num": 442
+    },
+    {
+        "scheme": "plonk",
+        "curve": "BLS12-377",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 52,
+        "verify_time": 13,
+        "constraint_num": 374
+    },
+    {
+        "scheme": "plonk",
+        "curve": "BLS12-381",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 52,
+        "verify_time": 12,
+        "constraint_num": 446
+    },
+    {
+        "scheme": "plonk",
+        "curve": "BLS24-315",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 48,
+        "verify_time": 18,
+        "constraint_num": 438
+    },
+    {
+        "scheme": "plonk",
+        "curve": "BLS24-317",
+        "pre_image": "dTpGdjzsVx",
+        "prove_time": 57,
+        "verify_time": 17,
+        "constraint_num": 457
+    }
+]
