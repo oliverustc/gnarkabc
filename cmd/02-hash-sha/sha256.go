@@ -1,9 +1,9 @@
 package main
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"gnarkabc/gnarkwrapper"
+	"gnarkabc/hash/sha"
 	"gnarkabc/logger"
 
 	"github.com/consensys/gnark/frontend"
@@ -52,38 +52,32 @@ func (sc *Sha256Circuit) PreCompile(params ...interface{}) {
 
 func (sc *Sha256Circuit) Assign(curveName string, params ...interface{}) {
 	preImage := params[0].(string)
-	preImageBytes := []byte(preImage)
-	preImageU8 := uints.NewU8Array(preImageBytes)
-	hash := sha256.Sum256(preImageBytes)
-	hashU8 := uints.NewU8Array(hash[:])
-	hashU8Arr := [32]uints.U8(hashU8)
+	preImageU8, hashU8Arr := sha.CalcSha256(preImage)
 	sc.PreImage = preImageU8
 	sc.Hash = hashU8Arr
 }
 
-func (sc *Sha256Circuit) GenerateValidAssignment(preImage string) {
-	preImageBytes := []byte(preImage)
-	preImageU8 := uints.NewU8Array(preImageBytes)
-	hash := sha256.Sum256(preImageBytes)
-	hashU8 := uints.NewU8Array(hash[:])
-	hashU8Arr := [32]uints.U8(hashU8)
-	sc.PreImage = preImageU8
-	sc.Hash = hashU8Arr
-}
+func Sha256ZKP(scheme string, curveName string, preImage string) Performance {
+	curve := gnarkwrapper.CurveMap[curveName]
 
-func Sha256Groth16ZK() {
-	preImage := "!"
-	var curveNameList = []string{"BN254", "BLS12-377", "BLS12-381", "BW6-633", "BW6-761", "BLS24-315", "BLS24-317"}
-	for _, curveName := range curveNameList {
-		logger.Info("testing groth16 zk-snark on curve %s", curveName)
-		curve := gnarkwrapper.CurveMap[curveName]
-		var sc Sha256Circuit
-		sc.PreCompile(len(preImage))
-		var scAssign Sha256Circuit
-		scAssign.Assign(curveName, preImage)
-		ProveTime, ConstraintNum, VerifyTime := gnarkwrapper.ZKP("groth16", curve, &sc, &scAssign)
-		logger.Info("ProveTime: %v ms", ProveTime)
-		logger.Info("ConstraintNum: %v", ConstraintNum)
-		logger.Info("VerifyTime: %v ms", VerifyTime)
+	var sc Sha256Circuit
+	sc.PreCompile(len(preImage))
+	var scAssign Sha256Circuit
+	scAssign.Assign(curveName, preImage)
+
+	ProveTime, ConstraintNum, VerifyTime := gnarkwrapper.ZKP(scheme, curve, &sc, &scAssign)
+	logger.Info("Sha256 hash proof with [%s] scheme on curve [%s]", scheme, curveName)
+	logger.Info("ProveTime: %v ms", ProveTime)
+	logger.Info("ConstraintNum: %v", ConstraintNum)
+	logger.Info("VerifyTime: %v ms", VerifyTime)
+
+	return Performance{
+		Scheme:        scheme,
+		HashAlg:       "SHA256",
+		Curve:         curveName,
+		PreImage:      preImage,
+		ProveTime:     ProveTime,
+		VerifyTime:    VerifyTime,
+		ConstraintNum: ConstraintNum,
 	}
 }
