@@ -11,6 +11,8 @@ import (
 	"github.com/consensys/gnark/frontend"
 )
 
+var CurveNameList = []string{"BN254", "BLS12-377", "BLS12-381", "BW6-633", "BW6-761", "BLS24-315", "BLS24-317"}
+
 type CircuitWrapper interface {
 	frontend.Circuit
 	PreCompile(params ...interface{})
