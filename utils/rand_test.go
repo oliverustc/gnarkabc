@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"gnarkabc/gnarkwrapper"
 	"gnarkabc/logger"
 	"hash"
 	"testing"
@@ -47,7 +46,7 @@ func TestRandItem(t *testing.T) {
 func TestRandBigInt(t *testing.T) {
 	for fieldName := range MiMCCaseMap {
 		logger.Info("curve: %s", fieldName)
-		field := gnarkwrapper.CurveMap[fieldName].ScalarField()
+		field := MiMCCaseMap[fieldName].Curve.ScalarField()
 		logger.Info("randBigInt: %x", RandBigInt(field))
 	}
 }

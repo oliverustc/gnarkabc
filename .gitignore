@@ -4,3 +4,5 @@ bin/
 *.html
 main
 *.csv
+gnark_solidity.go
+output

@@ -1,15 +1,15 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
 	"gnarkabc/gnarkwrapper"
 	"gnarkabc/hash/mimchash"
 	"gnarkabc/logger"
+	"gnarkabc/utils"
 	"math/big"
-	"os"
 
 	"github.com/consensys/gnark/frontend"
+	"github.com/consensys/gnark/std/hash/mimc"
 )
 
 type SimpleCircuit struct {
@@ -24,16 +24,12 @@ func (c *SimpleCircuit) Define(api frontend.API) error {
 	return nil
 }
 
+// empty function
 func (c *SimpleCircuit) PreCompile(params ...interface{}) {
-
 }
+
+// random assign
 func (c *SimpleCircuit) Assign(curveName string, params ...interface{}) {
-	c.P = 4
-	c.Q = 8
-	c.N = 32
-}
-
-func (c *SimpleCircuit) Assign2(curveName string, params ...interface{}) {
 	size := params[0].(int)
 	// 随机生成size大小的prime
 	p, err := rand.Prime(rand.Reader, size)
@@ -51,77 +47,107 @@ func (c *SimpleCircuit) Assign2(curveName string, params ...interface{}) {
 	c.N = n
 }
 
-func SimpleZKP(scheme string, inputLen int) {
+type MiMCCircuit struct {
+	PreImage []frontend.Variable
+	Hash     frontend.Variable `gnark:",public"`
+}
+
+func (circuit *MiMCCircuit) Define(api frontend.API) error {
+	mimc, err := mimc.NewMiMC(api)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(circuit.PreImage); i++ {
+		mimc.Write(circuit.PreImage[i])
+	}
+	hash := mimc.Sum()
+	api.AssertIsEqual(hash, circuit.Hash)
+
+	return nil
+}
+
+func (circuit *MiMCCircuit) PreCompile(params ...interface{}) {
+	inputLen := params[0].(int)
+	preImageLen := (inputLen + 31) / 32
+	circuit.PreImage = make([]frontend.Variable, preImageLen)
+}
+
+func (circuit *MiMCCircuit) Assign(curveName string, params ...interface{}) {
+	curve := mimchash.MiMCCaseMap[curveName]
+	inputLen := params[0].(int)
+	input := utils.RandStr(inputLen)
+	var preImageByteArr [][]byte
+	if len(input)%32 != 0 {
+		padding := 32 - (len(input) % 32)
+		input += string(make([]byte, padding))
+	}
+	field := curve.Curve.ScalarField()
+	for i := 0; i < len(input); i += 32 {
+		end := i + 32
+		if end > len(input) {
+			end = len(input)
+		}
+		preImageByteArr = append(preImageByteArr, mimchash.Convert2Byte(input[i:end], field))
+	}
+	hashFunc := curve.Hash
+	hashFunc.Reset()
+	circuit.PreImage = make([]frontend.Variable, len(preImageByteArr))
+	for i, p := range preImageByteArr {
+		circuit.PreImage[i] = p
+		hashFunc.Write(p)
+	}
+	circuit.Hash = hashFunc.Sum(nil)
+}
+
+func SimpleCircuitZKP(scheme string, inputLen int) {
+	curve := gnarkwrapper.CurveMap["BN254"]
 	var circuit SimpleCircuit
 	circuit.PreCompile(inputLen)
-	curveName := "BN254"
-	curve := mimchash.MiMCCaseMap[curveName]
-	circuit.PreCompile(inputLen)
-	zk := gnarkwrapper.NewGnarkWrapper(scheme, &circuit, curve.Curve)
+	zk := gnarkwrapper.NewGnarkWrapper(scheme, &circuit, curve)
 	zk.Compile()
 	zk.Setup()
-
-	var assign SimpleCircuit
-	assign.Assign(curveName, inputLen)
-	zk.SetAssignment(&assign)
+	circuit.Assign("BN254", inputLen)
+	zk.SetAssignment(&circuit)
 	zk.Prove()
 	zk.Verify()
-	logger.Info("prove success")
+	zk.ExportSolidity("")
+	prootStr := zk.GenSolProofParams()
+	logger.Info("proofStr:\n%s", prootStr)
+	inputStr := zk.GenSolInputParams()
+	logger.Info("inputStr:\n%s", inputStr)
+	zk.SolCompileAndABIgen("")
+	zk.SolGenMain()
+	zk.SolGenGoMod()
+	zk.SolVerify()
+}
 
-	solidityFile, err := os.OpenFile("solidity/Verifier.sol", os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer solidityFile.Close()
-
-	proofFile, err := os.OpenFile("solidity/proof", os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer proofFile.Close()
-
-	rawProofFile, err := os.OpenFile("solidity/rawProof", os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer rawProofFile.Close()
-
-	publicWitness, err := os.OpenFile("solidity/publicWitness", os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer publicWitness.Close()
-
-	var buffer bytes.Buffer
-	switch scheme {
-	case "groth16":
-
-		wrapper := zk.(*gnarkwrapper.Groth16Wrapper)
-		logger.Info("export solidity")
-		wrapper.VK.ExportSolidity(solidityFile)
-		logger.Info("write proof")
-
-		wrapper.Proof.WriteRawTo(&buffer)
-		logger.Info("proof: %v", buffer.Bytes())
-		logger.Info("proof len: %v", len(buffer.Bytes()))
-		// clean the buffer
-		buffer.Reset()
-		wrapper.Proof.WriteTo(&buffer)
-		logger.Info("proof: %v", buffer.Bytes())
-		logger.Info("proof len: %v", len(buffer.Bytes()))
-		wrapper.Proof.WriteTo(proofFile)
-		wrapper.Proof.WriteRawTo(rawProofFile)
-		logger.Info("write public witness")
-		wrapper.WitnessPublic.WriteTo(publicWitness)
-	case "plonk":
-		wrapper := zk.(*gnarkwrapper.PlonkWrapper)
-		wrapper.VK.ExportSolidity(solidityFile)
-		wrapper.Proof.WriteRawTo(proofFile)
-		wrapper.WitnessPublic.WriteTo(publicWitness)
-	}
-
+func MiMCCircuitZKP(scheme string, inputLen int) {
+	curve := gnarkwrapper.CurveMap["BN254"]
+	var circuit MiMCCircuit
+	circuit.PreCompile(inputLen)
+	zk := gnarkwrapper.NewGnarkWrapper(scheme, &circuit, curve)
+	zk.Compile()
+	zk.Setup()
+	circuit.Assign("BN254", inputLen)
+	zk.SetAssignment(&circuit)
+	zk.Prove()
+	zk.Verify()
+	zk.ExportSolidity("")
+	prootStr := zk.GenSolProofParams()
+	logger.Info("proofStr:\n%s", prootStr)
+	inputStr := zk.GenSolInputParams()
+	logger.Info("inputStr:\n%s", inputStr)
+	zk.SolCompileAndABIgen("")
+	zk.SolGenMain()
+	zk.SolGenGoMod()
+	zk.SolVerify()
 }
 
 func main() {
-	SimpleZKP("groth16", 12)
+	utils.RemoveDir("output")
+	SimpleCircuitZKP("groth16", 12)
+	// SimpleCircuitZKP("plonk", 12)
+	// MiMCCircuitZKP("groth16", 12)
+	// MiMCCircuitZKP("plonk", 12)
 }

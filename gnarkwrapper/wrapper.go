@@ -13,6 +13,8 @@ import (
 
 var CurveNameList = []string{"BN254", "BLS12-377", "BLS12-381", "BW6-633", "BW6-761", "BLS24-315", "BLS24-317"}
 
+const FpSize = 4 * 8
+
 type CircuitWrapper interface {
 	frontend.Circuit
 	PreCompile(params ...interface{})
@@ -34,6 +36,17 @@ type GnarkWrapper interface {
 	GetConstraintNum() int                     // 获取约束数量
 	GetWitness() witness.Witness               // 获取witness
 	GetWitnessJson(public bool) []byte         // 获取witness in json
+
+	ExportSolidity(filePath string)     // 导出solidity代码
+	ProofMarshall() string              // 证明序列化
+	PublicWitnessMarshall() string      // 公开输入序列化
+	GetPublicInputNum() string          // 获取公开输入数量
+	GenSolProofParams() string          // 生成solidity的proof参数
+	GenSolInputParams() string          // 生成solidity的input参数
+	SolCompileAndABIgen(solPath string) // 编译和ABI生成
+	SolGenMain()                        // 生成main
+	SolGenGoMod()                       // 生成go.mod
+	SolVerify()                         // 验证solidity证明
 }
 
 // BaseWrapper 提供了零知识证明方案的基础实现
