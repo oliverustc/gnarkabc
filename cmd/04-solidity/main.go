@@ -147,7 +147,10 @@ func MiMCCircuitZKP(scheme string, inputLen int) {
 func main() {
 	utils.RemoveDir("output")
 	SimpleCircuitZKP("groth16", 12)
-	// SimpleCircuitZKP("plonk", 12)
-	// MiMCCircuitZKP("groth16", 12)
-	// MiMCCircuitZKP("plonk", 12)
+	utils.RemoveDir("output")
+	SimpleCircuitZKP("plonk", 12)
+	utils.RemoveDir("output")
+	MiMCCircuitZKP("groth16", 12)
+	utils.RemoveDir("output")
+	MiMCCircuitZKP("plonk", 12)
 }
