@@ -2,11 +2,12 @@ package main
 
 import (
 	"crypto/rand"
-	"gnarkabc/gnarkwrapper"
-	"gnarkabc/hash/mimchash"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
 	"math/big"
+
+	"github.com/oliverustc/gnarkabc/gnarkwrapper"
+	"github.com/oliverustc/gnarkabc/hash/mimchash"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/hash/mimc"

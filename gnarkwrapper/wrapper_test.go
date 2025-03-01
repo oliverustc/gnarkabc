@@ -1,8 +1,9 @@
 package gnarkwrapper
 
 import (
-	"gnarkabc/logger"
 	"testing"
+
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/frontend"

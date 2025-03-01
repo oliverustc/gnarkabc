@@ -1,9 +1,10 @@
 package mimchash
 
 import (
-	"gnarkabc/logger"
 	"strings"
 	"testing"
+
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 func TestConvert2Byte(t *testing.T) {

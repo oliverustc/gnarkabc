@@ -1,9 +1,10 @@
 package utils
 
 import (
-	"gnarkabc/logger"
 	"hash"
 	"testing"
+
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	gchash "github.com/consensys/gnark-crypto/hash"

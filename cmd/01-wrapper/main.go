@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gnarkabc/gnarkwrapper"
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/gnarkwrapper"
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark/frontend"
 )

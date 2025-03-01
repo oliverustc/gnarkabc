@@ -1,9 +1,10 @@
 package gnarkwrapper
 
 import (
-	"gnarkabc/logger"
 	"math/big"
 	"time"
+
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/backend/witness"

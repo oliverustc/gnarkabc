@@ -1,4 +1,4 @@
-module gnarkabc
+module github.com/oliverustc/gnarkabc
 
 go 1.23.0
 

@@ -2,8 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"gnarkabc/logger"
 	"os"
+
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 type Performance struct {

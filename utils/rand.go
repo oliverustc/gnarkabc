@@ -2,11 +2,12 @@ package utils
 
 import (
 	crand "crypto/rand"
-	"gnarkabc/logger"
 	"math/big"
 	"math/rand"
 	"time"
 	"unsafe"
+
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

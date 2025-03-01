@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gnarkabc/gnarkwrapper"
+	"github.com/oliverustc/gnarkabc/gnarkwrapper"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark/frontend"

@@ -1,8 +1,9 @@
 package sha
 
 import (
-	"gnarkabc/logger"
 	"testing"
+
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 func TestCalcSha256(t *testing.T) {

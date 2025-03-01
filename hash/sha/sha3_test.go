@@ -1,7 +1,7 @@
 package sha
 
 import (
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 	"testing"
 )
 

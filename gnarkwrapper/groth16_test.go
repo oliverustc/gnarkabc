@@ -1,7 +1,7 @@
 package gnarkwrapper
 
 import (
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/utils"
 	"testing"
 
 	"github.com/consensys/gnark-crypto/ecc"

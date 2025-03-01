@@ -1,7 +1,7 @@
 package mimchash
 
 import (
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 	"hash"
 	"math/big"
 

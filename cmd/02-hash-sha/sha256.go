@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"gnarkabc/gnarkwrapper"
-	"gnarkabc/hash/sha"
-	"gnarkabc/logger"
+
+	"github.com/oliverustc/gnarkabc/gnarkwrapper"
+	"github.com/oliverustc/gnarkabc/hash/sha"
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/hash/sha2"

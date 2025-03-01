@@ -1,8 +1,9 @@
 package utils
 
 import (
-	"gnarkabc/logger"
 	"os"
+
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 // 如果文件不存在，则创建文件
