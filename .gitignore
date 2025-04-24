@@ -1,0 +1,7 @@
+output/
+*.csv
+*.png
+*.log
+node_modules/
+performance*
+run
