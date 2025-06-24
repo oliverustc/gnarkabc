@@ -24,20 +24,17 @@ func (sc *Sha256Circuit) Define(api frontend.API) error {
 	if err != nil {
 		return err
 	}
-
 	// 初始化uint API
 	uapi, err := uints.New[uints.U32](api)
 	if err != nil {
 		return err
 	}
-
 	// 计算哈希值
 	h.Write(sc.PreImage)
 	res := h.Sum()
 	if len(res) != 32 {
 		return fmt.Errorf("hash is not 32 bytes")
 	}
-
 	// 验证计算的哈希值与输入的哈希值相等
 	for i := range sc.Hash {
 		uapi.ByteAssertEq(sc.Hash[i], res[i])
@@ -45,12 +42,12 @@ func (sc *Sha256Circuit) Define(api frontend.API) error {
 	return nil
 }
 
-func (sc *Sha256Circuit) PreCompile(params interface{}) {
+func (sc *Sha256Circuit) PreCompile(params any) {
 	preImageLen := params.([]interface{})[0].(int)
 	sc.PreImage = make([]uints.U8, preImageLen)
 }
 
-func (sc *Sha256Circuit) Assign(params interface{}) {
+func (sc *Sha256Circuit) Assign(params any) {
 	args := params.([]interface{})
 	preImage := args[0].(string)
 	preImageU8, hashU8Arr := shahash.CalcSha256(preImage)
@@ -60,9 +57,9 @@ func (sc *Sha256Circuit) Assign(params interface{}) {
 
 func Sha256ZKP(scheme string, curveName string, preImage string) Performance {
 	var sc Sha256Circuit
-	preCompileParams := []interface{}{len(preImage)}
+	preCompileParams := []any{len(preImage)}
 
-	assignParams := []interface{}{preImage}
+	assignParams := []any{preImage}
 	switch scheme {
 	case "groth16":
 		gw := wrapper.Groth16ZKP(&sc, curveName, preCompileParams, assignParams)

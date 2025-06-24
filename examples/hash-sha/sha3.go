@@ -37,7 +37,7 @@ func (sc *Sha3Circuit) Define(api frontend.API) error {
 	return nil
 }
 
-func (sc *Sha3Circuit) PreCompile(params interface{}) {
+func (sc *Sha3Circuit) PreCompile(params any) {
 	args := params.([]interface{})
 	preImageLen := args[0].(int)
 	sc.PreImage = make([]uints.U8, preImageLen)
@@ -47,7 +47,7 @@ func (sc *Sha3Circuit) PreCompile(params interface{}) {
 	sc.Hasher = zkSha3Name
 }
 
-func (sc *Sha3Circuit) Assign(params interface{}) {
+func (sc *Sha3Circuit) Assign(params any) {
 	args := params.([]interface{})
 	preImage := args[0].(string)
 	zkSha3Name := args[1].(string)
@@ -59,8 +59,8 @@ func (sc *Sha3Circuit) Assign(params interface{}) {
 
 func Sha3ZKP(scheme string, curveName string, preImage string, zkSha3Name string) Performance {
 	var sc Sha3Circuit
-	preCompileParams := []interface{}{len(preImage), zkSha3Name}
-	assignParams := []interface{}{preImage, zkSha3Name}
+	preCompileParams := []any{len(preImage), zkSha3Name}
+	assignParams := []any{preImage, zkSha3Name}
 	switch scheme {
 	case "groth16":
 		gw := wrapper.Groth16ZKP(&sc, curveName, preCompileParams, assignParams)

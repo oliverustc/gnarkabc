@@ -33,7 +33,7 @@ func (c *MiMCHash) Define(api frontend.API) error {
 	return nil
 }
 
-func (c *MiMCHash) PreCompile(params interface{}) {
+func (c *MiMCHash) PreCompile(params any) {
 	args := params.([]interface{})
 	inputLen := args[0].(int)
 	var preImageLen int
@@ -45,7 +45,7 @@ func (c *MiMCHash) PreCompile(params interface{}) {
 	c.PreImage = make([]frontend.Variable, preImageLen)
 }
 
-func (c *MiMCHash) Assign(params interface{}) {
+func (c *MiMCHash) Assign(params any) {
 	args := params.([]interface{})
 	preImage := args[0].([][]byte)
 	hash := args[1].([]byte)
@@ -73,8 +73,8 @@ func MiMCHashZKP(input string, curveName string, scheme string) Performance {
 	inputBytes := mimchash.ConvertString2Byte(input, mod)
 	hashFunc := mimchash.MiMCCaseMap[curveName].Hash
 	hash := mimchash.MiMCHash(hashFunc, inputBytes)
-	preCompileParams := []interface{}{inputLen}
-	assignParams := []interface{}{inputBytes, hash}
+	preCompileParams := []any{inputLen}
+	assignParams := []any{inputBytes, hash}
 	switch scheme {
 	case "groth16":
 		gw := wrapper.Groth16ZKP(&mc, curveName, preCompileParams, assignParams)

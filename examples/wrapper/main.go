@@ -17,7 +17,6 @@ type Product struct {
 
 // 定义电路的逻辑：Y = X^3 + X + 5
 func (sc *Product) Define(api frontend.API) error {
-	// 计算 X 的立方
 	x3 := api.Mul(sc.X, sc.X, sc.X)
 	// 计算 Y 的值
 	res := api.Add(x3, sc.X, 5)

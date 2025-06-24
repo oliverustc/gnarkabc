@@ -56,7 +56,7 @@ func GenerateGroth16InnerProofs() {
 	for i := 0; i < 5; i++ {
 		p := utils.RandInt(0, 100)
 		q := utils.RandInt(0, 100)
-		circuit.Assign([]interface{}{p, q})
+		circuit.Assign([]any{p, q})
 		g.SetAssignment(&circuit)
 		g.Prove()
 		g.Verify()
@@ -65,7 +65,7 @@ func GenerateGroth16InnerProofs() {
 	}
 }
 
-func (c *DummyAggregate) PreCompile(params interface{}) {
+func (c *DummyAggregate) PreCompile(params any) {
 	curve := utils.CurveMap["BN254"]
 	var circuit circuits.Product
 	circuit.PreCompile(nil)
@@ -89,7 +89,7 @@ func (c *DummyAggregate) PreCompile(params interface{}) {
 	}
 }
 
-func (c *DummyAggregate) Assign(params interface{}) {
+func (c *DummyAggregate) Assign(params any) {
 	curve := utils.CurveMap["BN254"]
 	var circuit circuits.Product
 	circuit.PreCompile(nil)

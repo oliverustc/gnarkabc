@@ -22,10 +22,10 @@ func (c *Poseidon2Hash) Define(api frontend.API) error {
 	return nil
 }
 
-func (c *Poseidon2Hash) PreCompile(params interface{}) {
+func (c *Poseidon2Hash) PreCompile(params any) {
 }
 
-func (c *Poseidon2Hash) Assign(params interface{}) {
+func (c *Poseidon2Hash) Assign(params any) {
 	args := params.([]interface{})
 	preImage := args[0].([][]byte)
 	hash := args[1].([]byte)

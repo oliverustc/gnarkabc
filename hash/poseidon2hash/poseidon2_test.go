@@ -30,7 +30,7 @@ func TestPoseidon2ZKP(t *testing.T) {
 	mod := Poseidon2CaseMap[curveName].Curve.ScalarField()
 	inputBytes := mimchash.ConvertString2Byte(input, mod)
 	expectedHash := Poseidon2Hash(hashFunc, inputBytes)
-	assignParams := []interface{}{inputBytes, expectedHash}
+	assignParams := []any{inputBytes, expectedHash}
 	var mc circuits.Poseidon2Hash
 	wrapper.Groth16ZKP(&mc, curveName, nil, assignParams)
 	wrapper.PlonkZKP(&mc, curveName, nil, assignParams)

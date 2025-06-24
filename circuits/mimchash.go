@@ -24,11 +24,11 @@ func (m *MimcHash) Define(api frontend.API) error {
 	return nil
 }
 
-func (m *MimcHash) PreCompile(params interface{}) {
+func (m *MimcHash) PreCompile(params any) {
 	// 留空
 }
 
-func (m *MimcHash) Assign(params interface{}) {
+func (m *MimcHash) Assign(params any) {
 	args := params.([]interface{})
 	preImage := args[0].([][]byte)
 	hash := args[1].([]byte)

@@ -15,12 +15,12 @@ func (tc *Product) Define(api frontend.API) error {
 	return nil
 }
 
-func (tc *Product) PreCompile(params interface{}) {
+func (tc *Product) PreCompile(params any) {
 	// 预编译逻辑为空
 	// 对于Product，PreCompile不需要任何参数
 }
 
-func (tc *Product) Assign(params interface{}) {
+func (tc *Product) Assign(params any) {
 	// 将params转换为切片以处理多个参数
 	args := params.([]interface{})
 	if len(args) != 2 {

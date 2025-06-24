@@ -17,7 +17,7 @@ func TestGroth16Write(t *testing.T) {
 		zk := NewWrapper(&circuit, curve)
 		zk.Compile()
 		zk.Setup()
-		assignParams := []interface{}{13, 17}
+		assignParams := []any{13, 17}
 		circuit.Assign(assignParams)
 		zk.SetAssignment(&circuit)
 		zk.Prove()

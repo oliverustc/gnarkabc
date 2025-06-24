@@ -45,7 +45,7 @@ func TestMiMCHashStringZKP(t *testing.T) {
 		mod := MiMCCaseMap[curveName].Curve.ScalarField()
 		data := ConvertString2Byte(input, mod)
 		expectedHash := MiMCHash(hashFunc, data)
-		assignParams := []interface{}{data, expectedHash}
+		assignParams := []any{data, expectedHash}
 		var mc circuits.MimcHash
 		wrapper.Groth16ZKP(&mc, curveName, nil, assignParams)
 		wrapper.PlonkZKP(&mc, curveName, nil, assignParams)
@@ -59,7 +59,7 @@ func TestMiMCHashBigIntZKP(t *testing.T) {
 		logger.Info("mimc hash zkp with bigint input on curve: [%s]", curveName)
 		data := input.Bytes()
 		expectedHash := MiMCHash(MiMCCaseMap[curveName].Hash, [][]byte{data})
-		assignParams := []interface{}{data, expectedHash}
+		assignParams := []any{data, expectedHash}
 		var mc circuits.MimcHash
 		wrapper.Groth16ZKP(&mc, curveName, nil, assignParams)
 		wrapper.PlonkZKP(&mc, curveName, nil, assignParams)

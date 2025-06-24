@@ -17,7 +17,7 @@ func TestPlonkWrite(t *testing.T) {
 		p := NewWrapper(&circuit, curve)
 		p.Compile()
 		p.Setup()
-		assignParams := []interface{}{13, 17}
+		assignParams := []any{13, 17}
 		circuit.Assign(assignParams)
 		p.SetAssignment(&circuit)
 		p.Prove()

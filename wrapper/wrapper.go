@@ -10,11 +10,11 @@ import (
 
 type CircuitWrapper interface {
 	frontend.Circuit
-	PreCompile(params interface{})
-	Assign(params interface{})
+	PreCompile(params any)
+	Assign(params any)
 }
 
-func Groth16ZKP(cw CircuitWrapper, curveName string, compileParams interface{}, assignParams interface{}) *groth16wrapper.Groth16Wrapper {
+func Groth16ZKP(cw CircuitWrapper, curveName string, compileParams any, assignParams any) *groth16wrapper.Groth16Wrapper {
 	curve := utils.CurveMap[curveName]
 	g := groth16wrapper.NewWrapper(cw, curve)
 	cw.PreCompile(compileParams)
@@ -27,7 +27,7 @@ func Groth16ZKP(cw CircuitWrapper, curveName string, compileParams interface{}, 
 	return g
 }
 
-func PlonkZKP(cw CircuitWrapper, curveName string, compileParams interface{}, assignParams interface{}) *plonkwrapper.PlonkWrapper {
+func PlonkZKP(cw CircuitWrapper, curveName string, compileParams any, assignParams any) *plonkwrapper.PlonkWrapper {
 	curve := utils.CurveMap[curveName]
 	p := plonkwrapper.NewWrapper(cw, curve)
 	cw.PreCompile(compileParams)

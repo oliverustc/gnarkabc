@@ -21,7 +21,7 @@ func TestGroth16(t *testing.T) {
 
 		p := utils.RandInt(0, 1000)
 		q := utils.RandInt(0, 1000)
-		assignParams := []interface{}{p, q}
+		assignParams := []any{p, q}
 		circuit.Assign(assignParams)
 		zk.SetAssignment(&circuit)
 		zk.Prove()

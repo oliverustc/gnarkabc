@@ -9,6 +9,7 @@ import (
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"
+	"github.com/consensys/gnark/backend"
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"
 	"github.com/consensys/gnark/constraint"
@@ -147,15 +148,15 @@ func (p *PlonkWrapper) GenerateWitness(public bool) {
 
 }
 
-// Prove 生成零知识证明
-func (p *PlonkWrapper) Prove() {
+// Prove 生成零知识证明，支持可选的证明者选项
+func (p *PlonkWrapper) Prove(opts ...backend.ProverOption) {
 	logger.Debug("proving circuit ...")
 	var err error
 	if p.WitnessFull == nil {
 		p.GenerateWitness(false)
 	}
 	start := time.Now()
-	p.Proof, err = plonk.Prove(p.CCS, p.PK, p.WitnessFull)
+	p.Proof, err = plonk.Prove(p.CCS, p.PK, p.WitnessFull, opts...)
 	if err != nil {
 		logger.Fatal("prove circuit failed. %s", err.Error())
 	}
@@ -164,7 +165,7 @@ func (p *PlonkWrapper) Prove() {
 }
 
 // Verify 验证零知识证明
-func (p *PlonkWrapper) Verify() {
+func (p *PlonkWrapper) Verify(opts ...backend.VerifierOption) {
 	logger.Debug("verifying circuit ...")
 	var err error
 	if p.WitnessPublic == nil {
@@ -174,7 +175,7 @@ func (p *PlonkWrapper) Verify() {
 		}
 	}
 	start := time.Now()
-	err = plonk.Verify(p.Proof, p.VK, p.WitnessPublic)
+	err = plonk.Verify(p.Proof, p.VK, p.WitnessPublic, opts...)
 	if err != nil {
 		logger.Fatal("verify circuit failed. %s", err.Error())
 	}

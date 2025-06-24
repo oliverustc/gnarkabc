@@ -17,4 +17,10 @@ var CurveNameList = []string{"BN254", "BLS12-377", "BLS12-381", "BW6-633", "BW6-
 
 var ShaCurveNameList = []string{"BN254", "BLS12-377", "BLS12-381", "BLS24-315", "BLS24-317"}
 
-var RecursionCurveList = []string{"BN254", "BLS12-377", "BW6-761"}
+var Groth16RecursionCurveList = []string{"BN254", "BLS12-377", "BW6-761"}
+
+var PlonkRecursionMap = map[string]ecc.ID{
+	"BN254":     ecc.BN254,
+	"BLS12-377": ecc.BW6_761,
+	"BW6-761":   ecc.BN254,
+}

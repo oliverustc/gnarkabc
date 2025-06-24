@@ -23,7 +23,7 @@ func TestPlonkGenSolParams(t *testing.T) {
 	zk := NewWrapper(&circuit, ecc.BN254)
 	zk.Compile()
 	zk.Setup()
-	assignParams := []interface{}{13, 17}
+	assignParams := []any{13, 17}
 	circuit.Assign(assignParams)
 	zk.SetAssignment(&circuit)
 	zk.Prove()
