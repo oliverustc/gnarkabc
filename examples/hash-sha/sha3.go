@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"gnarkabc/hash/shahash"
-	"gnarkabc/wrapper"
+	"github.com/oliverustc/gnarkabc/hash/shahash"
+	"github.com/oliverustc/gnarkabc/wrapper"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/math/uints"

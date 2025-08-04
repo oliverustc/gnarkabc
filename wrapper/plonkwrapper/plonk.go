@@ -5,7 +5,7 @@ import (
 	"math/big"
 	"time"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/kzg"

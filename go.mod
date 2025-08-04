@@ -1,6 +1,6 @@
-module gnarkabc
+module github.com/oliverustc/gnarkabc
 
-go 1.24.0
+go 1.23.0
 
 require (
 	github.com/antonfisher/nested-logrus-formatter v1.3.1

@@ -3,8 +3,8 @@ package groth16wrapper
 import (
 	"os"
 
-	"gnarkabc/logger"
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"

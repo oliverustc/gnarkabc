@@ -3,10 +3,10 @@ package main
 import (
 	"strconv"
 
-	"gnarkabc/circuits"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
-	"gnarkabc/wrapper/groth16wrapper"
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/wrapper/groth16wrapper"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/algebra/emulated/sw_bn254"

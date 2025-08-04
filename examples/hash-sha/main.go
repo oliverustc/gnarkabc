@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 type Performance struct {

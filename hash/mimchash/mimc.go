@@ -4,7 +4,7 @@ import (
 	"hash"
 	"math/big"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	gchash "github.com/consensys/gnark-crypto/hash"

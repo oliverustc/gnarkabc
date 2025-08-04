@@ -2,7 +2,8 @@ package groth16wrapper
 
 import (
 	"fmt"
-	"gnarkabc/logger"
+
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/backend/witness"

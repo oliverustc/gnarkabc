@@ -3,8 +3,8 @@ package groth16wrapper
 import (
 	"testing"
 
-	"gnarkabc/circuits"
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark-crypto/ecc"
 )

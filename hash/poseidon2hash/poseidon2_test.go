@@ -3,11 +3,11 @@ package poseidon2hash
 import (
 	"testing"
 
-	"gnarkabc/circuits"
-	"gnarkabc/hash/mimchash"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
-	"gnarkabc/wrapper"
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/hash/mimchash"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/wrapper"
 )
 
 func TestPoseidon2Hash(t *testing.T) {

@@ -6,9 +6,9 @@ import (
 	"os"
 	"time"
 
-	"gnarkabc/hash/mimchash"
-	"gnarkabc/logger"
-	"gnarkabc/wrapper"
+	"github.com/oliverustc/gnarkabc/hash/mimchash"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/wrapper"
 
 	"github.com/consensys/gnark/frontend"
 	"github.com/consensys/gnark/std/hash/mimc"

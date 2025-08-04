@@ -3,8 +3,8 @@ package plonkwrapper
 import (
 	"os"
 
-	"gnarkabc/logger"
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"

@@ -1,9 +1,9 @@
 package wrapper
 
 import (
-	"gnarkabc/utils"
-	"gnarkabc/wrapper/groth16wrapper"
-	"gnarkabc/wrapper/plonkwrapper"
+	"github.com/oliverustc/gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/wrapper/groth16wrapper"
+	"github.com/oliverustc/gnarkabc/wrapper/plonkwrapper"
 
 	"github.com/consensys/gnark/frontend"
 )

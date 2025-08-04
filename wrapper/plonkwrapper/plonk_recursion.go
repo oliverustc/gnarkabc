@@ -2,7 +2,8 @@ package plonkwrapper
 
 import (
 	"fmt"
-	"gnarkabc/logger"
+
+	"github.com/oliverustc/gnarkabc/logger"
 
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"

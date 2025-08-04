@@ -1,11 +1,12 @@
 package main
 
 import (
-	"gnarkabc/circuits"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
-	"gnarkabc/wrapper/groth16wrapper"
 	"os"
+
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/wrapper/groth16wrapper"
 )
 
 func generateProductGroth16InnerProofs() {

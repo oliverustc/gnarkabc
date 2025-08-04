@@ -3,7 +3,7 @@ package utils
 import (
 	"testing"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 func TestRandStr(t *testing.T) {

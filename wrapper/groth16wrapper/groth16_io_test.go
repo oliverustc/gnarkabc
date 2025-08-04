@@ -3,9 +3,9 @@ package groth16wrapper
 import (
 	"testing"
 
-	"gnarkabc/circuits"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 )
 
 func TestGroth16Write(t *testing.T) {

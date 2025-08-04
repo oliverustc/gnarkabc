@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"text/template"
 
-	"gnarkabc/logger"
-	"gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	fr_bn254 "github.com/consensys/gnark-crypto/ecc/bn254/fr"

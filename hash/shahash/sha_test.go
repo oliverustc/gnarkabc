@@ -3,7 +3,7 @@ package shahash
 import (
 	"testing"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 func TestCalcSha256(t *testing.T) {

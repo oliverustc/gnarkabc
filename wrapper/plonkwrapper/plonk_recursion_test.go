@@ -1,10 +1,11 @@
 package plonkwrapper
 
 import (
-	"gnarkabc/circuits"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
 	"testing"
+
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
 
 	"github.com/consensys/gnark/std/algebra/emulated/sw_bn254"
 	"github.com/consensys/gnark/std/algebra/emulated/sw_bw6761"

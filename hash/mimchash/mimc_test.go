@@ -8,10 +8,10 @@ import (
 
 	crand "crypto/rand"
 
-	"gnarkabc/circuits"
-	"gnarkabc/logger"
-	"gnarkabc/utils"
-	"gnarkabc/wrapper"
+	"github.com/oliverustc/gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/utils"
+	"github.com/oliverustc/gnarkabc/wrapper"
 )
 
 func TestConvertString2Byte(t *testing.T) {

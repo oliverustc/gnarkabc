@@ -3,7 +3,7 @@ package wrapper
 import (
 	"testing"
 
-	"gnarkabc/circuits"
+	"github.com/oliverustc/gnarkabc/circuits"
 )
 
 func TestZKP(t *testing.T) {

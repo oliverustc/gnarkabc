@@ -3,7 +3,7 @@ package utils
 import (
 	"os"
 
-	"gnarkabc/logger"
+	"github.com/oliverustc/gnarkabc/logger"
 )
 
 func CheckFileExists(filePath string) bool {
