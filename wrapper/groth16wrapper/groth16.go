@@ -202,7 +202,7 @@ func (g *Groth16Wrapper) GetConstraintNum() int {
 
 // 获取json格式witness
 func (g *Groth16Wrapper) GetWitnessJson(public bool) []byte {
-	schama, err := frontend.NewSchema(g.Assignment)
+	schama, err := frontend.NewSchema(g.Field, g.Assignment)
 	if err != nil {
 		logger.Fatal("get schema failed: %v", err)
 	}

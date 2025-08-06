@@ -240,7 +240,7 @@ func (p *PlonkWrapper) GetConstraintNum() int {
 }
 
 func (p *PlonkWrapper) GetWitnessJson(public bool) []byte {
-	schama, err := frontend.NewSchema(p.Assignment)
+	schama, err := frontend.NewSchema(p.Field, p.Assignment)
 	if err != nil {
 		logger.Fatal("get schema failed: %v", err)
 	}
